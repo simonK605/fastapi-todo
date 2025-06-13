@@ -20,3 +20,15 @@ def create_todo(todo: ToDoCreate, db: Session = Depends(get_db)):
     db.commit()
     db.refresh(db_todo)
     return db_todo
+
+
+@router.delete("/{todo_id}", status_code=status.HTTP_204_NO_CONTENT)
+def delete_todo(todo_id: int, db: Session = Depends(get_db)):
+    todo = db.query(ToDo).filter(ToDo.id == todo_id).first()
+    if todo is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Todo with id {todo_id} not found"
+        )
+    db.delete(todo)
+    db.commit()
